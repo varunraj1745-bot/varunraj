@@ -1,0 +1,42 @@
+from cryptography.fernet import Fernet
+import os
+def create_secret_key():
+    key = Fernet.generate_key()
+    with open("secret.key", "wb") as key_file:
+        key_file.write(key)
+    print("Key generated")
+def load_key():
+    return open("secret.key", "rb").read()
+def encrypt(filename, key):
+    f = Fernet(key)
+    with open(filename, "rb") as file:
+        data = file.read()
+    encrypted_data = f.encrypt(data)
+    with open(filename, "wb") as file:
+        file.write(encrypted_data)
+def decrypt(filename, key):
+    f = Fernet(key)
+    with open(filename, "rb") as file:
+        encrypted_data = file.read()
+    decrypted_data = f.decrypt(encrypted_data)
+    with open(filename, "wb") as file:
+        file.write(decrypted_data)
+choice = input("Enter 'E' to encrypt or 'D' to decrypt: ").lower()
+if choice == 'e':
+    filename = input("Enter filename: ")
+    if os.path.exists(filename):
+        key = load_key()
+        encrypt(filename, key)
+        print("File encrypted successfully")
+    else:
+        print("File not found")
+elif choice == 'd':
+    filename = input("Enter filename: ")
+    if os.path.exists(filename):
+        key = load_key()
+        decrypt(filename, key)
+        print("File decrypted successfully")
+    else:
+        print("File not found")
+else:
+    print("Invalid choice")
